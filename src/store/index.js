@@ -10,5 +10,8 @@ export default new Vuex.Store({
   },
   state: {},
   mutations: {},
-  actions: {}
+  actions: {},
+  getters: {
+    menu: state => state.user.menu
+  }
 });

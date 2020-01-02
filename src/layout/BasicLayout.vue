@@ -22,25 +22,33 @@
           >Ant-Design-Vue
         </span>
       </div>
-      <a-menu theme="dark" mode="inline" :defaultSelectedKeys="['1']">
-        <a-menu-item key="1">
-          <a-icon type="user" />
-          <span>nav 1</span>
-        </a-menu-item>
-        <a-menu-item key="2">
-          <a-icon type="video-camera" />
-          <span>nav 2</span>
-        </a-menu-item>
-        <a-menu-item key="3">
-          <a-icon type="upload" />
-          <span>nav 3</span>
-        </a-menu-item>
-        <a-sub-menu key="sub1">
-          <span slot="title"><a-icon type="user" /><span>User</span></span>
-          <a-menu-item key="3">Tom</a-menu-item>
-          <a-menu-item key="4">Bill</a-menu-item>
-          <a-menu-item key="5">Alex</a-menu-item>
-        </a-sub-menu>
+      <a-menu
+        theme="dark"
+        mode="inline"
+        :defaultSelectedKeys="fullPath"
+        :openKeys="openKeys"
+        @openChange="handleOpenChange"
+      >
+        <template v-for="item of menu">
+          <a-menu-item :key="item.path" v-if="!item.children">
+            <router-link :to="{ path: item.path }">
+              <a-icon :type="item.icon" />
+              <span>{{ item.name }}</span>
+            </router-link>
+          </a-menu-item>
+        </template>
+        <template v-for="item of menu">
+          <a-sub-menu :key="item.path" v-if="item.children">
+            <span slot="title"
+              ><a-icon :type="item.icon" /><span>{{ item.name }}</span></span
+            >
+            <a-menu-item v-for="it of item.children" :key="it.path">
+              <router-link :to="{ path: it.path }">
+                {{ it.name }}
+              </router-link>
+            </a-menu-item>
+          </a-sub-menu>
+        </template>
       </a-menu>
     </a-layout-sider>
     <a-layout
@@ -57,6 +65,7 @@
           :type="collapsed ? 'menu-unfold' : 'menu-fold'"
           @click="() => (collapsed = !collapsed)"
         />
+        <a-icon class="logout" type="logout" @click="handleLogout" />
       </a-layout-header>
       <a-layout-content
         :style="{
@@ -66,20 +75,53 @@
         }"
       >
         <div style="background: #fff;padding: 18px">
-          Content
+          <router-view />
         </div>
       </a-layout-content>
     </a-layout>
   </a-layout>
 </template>
 <script>
+import { mapState, mapActions } from "vuex";
 export default {
   name: "BasicLayout",
+  components: {},
   data() {
     return {
       collapsed: false,
-      headerWidth: "100%"
+      headerWidth: "100%",
+      menu: [1, 2],
+      fullPath: [this.$route.fullPath],
+      openKeys: this.$route.matched.map(item => item.path)
     };
+  },
+  computed: {
+    ...mapState(["user"])
+  },
+  mounted() {
+    this.getMenu();
+  },
+  methods: {
+    ...mapActions(["logout"]),
+    getMenu() {
+      const { menu } = this.user;
+      console.log(menu);
+      this.menu = menu;
+    },
+    handleOpenChange(openKeys) {
+      const latestOpenKey = openKeys.find(
+        key => this.openKeys.indexOf(key) === -1
+      );
+      console.log(latestOpenKey);
+      this.openKeys = latestOpenKey ? [latestOpenKey] : [];
+    },
+    handleLogout() {
+      const { logout } = this;
+      logout().then(res => {
+        console.log(res);
+        this.$router.push({ path: "/user/login" });
+      });
+    }
   }
 };
 </script>
@@ -108,7 +150,7 @@ export default {
 <style scoped>
 .header {
   background: #fff;
-  padding: 0 12px 0 0;
+  padding: 0 18px 0 0;
   position: fixed;
   top: 0;
   right: 0;
@@ -117,11 +159,22 @@ export default {
   box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
   -webkit-transition: width 0.2s;
   transition: width 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .title {
   font-size: 17px;
   display: inline-block;
   width: 142px;
   text-align: center;
+}
+.logout {
+  line-height: 64px;
+  padding-left: 12px;
+  cursor: pointer;
+}
+.logout:hover {
+  color: #1890ff;
 }
 </style>

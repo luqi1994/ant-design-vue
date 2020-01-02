@@ -1,27 +1,47 @@
-import { getUserInfo } from "../../services/user";
+import { getToken, getUserInfo } from "../../services/user";
 
 const user = {
   state: {
-    userInfo: {}
+    token: "",
+    userInfo: {},
+    menu: []
   },
 
   mutations: {
+    SET_TOKEN: (state, token) => {
+      state.token = token;
+    },
     SET_INFO: (state, info) => {
       state.userInfo = info;
+    },
+    SET_MENU: (state, menu) => {
+      state.menu = menu;
     }
   },
 
   actions: {
-    // 用户信息
-    getUserInfoAction({ commit }, payload) {
-      return getUserInfo()
-        .then(res => {
-          commit("SET_INFO", payload);
+    async getToken({ commit }, payload) {
+      return getToken(payload).then(res => {
+        if (res) {
+          commit("SET_TOKEN", res);
           return res;
-        })
-        .catch(err => {
-          this.$message.error(err);
-        });
+        }
+      });
+    },
+    // 用户信息
+    async getUserInfoAction({ commit }, payload) {
+      return getUserInfo(payload).then(res => {
+        if (res) {
+          commit("SET_INFO", res);
+          commit("SET_MENU", res.menu);
+          return res;
+        }
+      });
+    },
+    // 退出
+    async logout({ commit }) {
+      commit("SET_TOKEN", "");
+      localStorage.removeItem("token");
     }
   }
 };
