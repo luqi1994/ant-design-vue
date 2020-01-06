@@ -69,7 +69,6 @@ export default {
           values.password = md5(values.password);
           const { getToken } = this;
           getToken(values).then(res => {
-            console.log(res);
             if (res) {
               localStorage.setItem("token", res.token);
               this.$router.push({ path: "/" });

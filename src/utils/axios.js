@@ -26,7 +26,6 @@ service.interceptors.request.use(config => {
 
 // 响应拦截
 service.interceptors.response.use(res => {
-  // console.log(res);
   if (res.data) {
     if (res.data.code === 200) {
       return res.data.data;

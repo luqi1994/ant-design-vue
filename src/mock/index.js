@@ -19,24 +19,42 @@ const getUserInfo = {
     name: "admin",
     menu: [
       {
-        name: "首页",
+        title: "首页",
+        icon: "home",
         path: "/home",
-        icon: "home"
+        redirect: "",
+        name: "Home",
+        component: "Home",
+        hidden: 0
       },
       {
-        name: "列表",
+        title: "列表",
+        icon: "form",
         path: "/list",
-        icon: "table",
+        redirect: "/list/table",
+        name: "List",
+        component: "List",
+        hidden: 0,
         children: [
           {
+            title: "文章",
+            icon: "",
             path: "/list/table",
-            name: "文章"
-          },
-          {
-            path: "/list/table2",
-            name: "文章2"
+            redirect: "",
+            name: "ListTable",
+            component: "ListTable",
+            hidden: 0
           }
         ]
+      },
+      {
+        title: "",
+        icon: "",
+        path: "/*",
+        redirect: "",
+        name: "Empty",
+        component: "Empty",
+        hidden: 1
       }
     ]
   }

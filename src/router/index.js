@@ -12,55 +12,46 @@ const routes = [
     path: "/user/login",
     name: "Login",
     component: () => import("@/views/user/Login")
-  },
-  {
-    path: "/404",
-    component: () => import("@/views/notfound/404")
   }
+  // {
+  //   path: "/404",
+  //   component: () => import("@/views/notfound/404")
+  // }
 ];
 
-const getRoutes = [
-  {
-    path: "/",
-    name: "/",
-    component: BasicLayout,
-    redirect: "/home",
-    children: [
-      {
-        path: "/home",
-        name: "Home",
-        component: () => import("@/views/home/Home")
-      },
-      {
-        path: "/list",
-        name: "List",
-        redirect: "/list/table",
-        component: BlankLayout,
-        children: [
-          {
-            path: "/list/table",
-            name: "Table",
-            component: () => import("@/views/user/Login")
-          }
-        ]
-      },
-      {
-        path: "/bbb",
-        name: "Home",
-        component: () => import("@/views/user/Login")
-      },
-      {
-        path: "/*",
-        component: () => import("@/views/notfound/Empty")
-      }
-    ]
-  }
-];
+// 路由的依赖组件
+const components = {
+  Home: () => import("@/views/home/Home"),
+  List: BlankLayout,
+  ListTable: () => import("@/views/user/Login"),
+  Empty: () => import("@/views/notfound/Empty")
+};
 
 const router = new VueRouter({
   mode: "history",
   routes
 });
+
+const delMenu = m => {
+  const c = m.map(item => {
+    if (item.children && item.children.length !== 0) {
+      return {
+        path: item.path,
+        name: item.name,
+        redirect: item.redirect,
+        component: components[item.component],
+        children: delMenu(item.children)
+      };
+    } else {
+      return {
+        path: item.path,
+        name: item.name,
+        component: components[item.component]
+      };
+    }
+  });
+  return c;
+};
 
 const whiteList = ["Login"];
 
@@ -68,18 +59,23 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   if (token) {
     if (to.path === "/user/login") {
-      console.log(0);
       next({ path: "/" });
     } else {
-      console.log(1);
       if (store.getters.menu.length === 0) {
-        console.log(2);
         store
           .dispatch("getUserInfoAction", { token: token })
           .then(res => {
-            console.log(res.menu);
             if (res) {
-              router.addRoutes(getRoutes);
+              const menu = [
+                {
+                  path: "/",
+                  component: BasicLayout,
+                  redirect: "/home",
+                  children: delMenu(res.menu)
+                }
+              ];
+              console.log(menu);
+              router.addRoutes(menu);
               next({ ...to, replace: true });
             }
           })
@@ -87,15 +83,12 @@ router.beforeEach((to, from, next) => {
             console.log(err);
             store.dispatch("logout");
             next({ path: "/user/login" });
-            console.log(3);
           });
       } else {
-        console.log(4);
         next();
       }
     }
   } else {
-    console.log(to.name);
     if (whiteList.includes(to.name)) {
       // 在免登录白名单，直接进入
       next();

@@ -22,6 +22,7 @@
           >Ant-Design-Vue
         </span>
       </div>
+      <!-- 左侧导航栏 -->
       <a-menu
         theme="dark"
         mode="inline"
@@ -30,21 +31,30 @@
         @openChange="handleOpenChange"
       >
         <template v-for="item of menu">
-          <a-menu-item :key="item.path" v-if="!item.children">
+          <a-menu-item
+            :key="item.path"
+            v-if="
+              (!item.children || item.children.length === 0) && !item.hidden
+            "
+          >
             <router-link :to="{ path: item.path }">
-              <a-icon :type="item.icon" />
-              <span>{{ item.name }}</span>
+              <a-icon :type="item.icon" v-if="item.icon" />
+              <span>{{ item.title }}</span>
             </router-link>
           </a-menu-item>
         </template>
         <template v-for="item of menu">
-          <a-sub-menu :key="item.path" v-if="item.children">
-            <span slot="title"
-              ><a-icon :type="item.icon" /><span>{{ item.name }}</span></span
-            >
+          <a-sub-menu
+            :key="item.path"
+            v-if="item.children && item.children.length !== 0 && !item.hidden"
+          >
+            <span slot="title">
+              <a-icon :type="item.icon" v-if="item.icon" />
+              <span>{{ item.title }}</span>
+            </span>
             <a-menu-item v-for="it of item.children" :key="it.path">
               <router-link :to="{ path: it.path }">
-                {{ it.name }}
+                {{ it.title }}
               </router-link>
             </a-menu-item>
           </a-sub-menu>
@@ -100,19 +110,18 @@ export default {
   },
   mounted() {
     this.getMenu();
+    console.log(this.$route);
   },
   methods: {
     ...mapActions(["logout"]),
     getMenu() {
       const { menu } = this.user;
-      console.log(menu);
       this.menu = menu;
     },
     handleOpenChange(openKeys) {
       const latestOpenKey = openKeys.find(
         key => this.openKeys.indexOf(key) === -1
       );
-      console.log(latestOpenKey);
       this.openKeys = latestOpenKey ? [latestOpenKey] : [];
     },
     handleLogout() {
