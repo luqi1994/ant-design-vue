@@ -1,7 +1,7 @@
 <template>
   <a-layout id="components-layout-demo-custom-trigger">
     <a-layout-sider
-      breakpoint="lg"
+      breakpoint="xl"
       collapsedWidth="80"
       v-model="collapsed"
       :style="{ overflow: 'auto', height: '100vh', position: 'fixed', left: 0 }"
@@ -84,7 +84,7 @@
           height: '100%'
         }"
       >
-        <div style="background: #fff;padding: 18px">
+        <div style="">
           <router-view />
         </div>
       </a-layout-content>
@@ -100,7 +100,7 @@ export default {
     return {
       collapsed: false,
       headerWidth: "100%",
-      menu: [1, 2],
+      menu: [],
       fullPath: [this.$route.fullPath],
       openKeys: this.$route.matched.map(item => item.path)
     };
@@ -108,9 +108,17 @@ export default {
   computed: {
     ...mapState(["user"])
   },
+  watch: {
+    collapsed(val) {
+      if (val) {
+        this.openKeys = [];
+      } else {
+        this.openKeys = this.$route.matched.map(item => item.path);
+      }
+    }
+  },
   mounted() {
     this.getMenu();
-    console.log(this.$route);
   },
   methods: {
     ...mapActions(["logout"]),
@@ -119,6 +127,7 @@ export default {
       this.menu = menu;
     },
     handleOpenChange(openKeys) {
+      console.log(openKeys);
       const latestOpenKey = openKeys.find(
         key => this.openKeys.indexOf(key) === -1
       );

@@ -59,7 +59,7 @@ router.beforeEach((to, from, next) => {
   const token = localStorage.getItem("token");
   if (token) {
     if (to.path === "/user/login") {
-      next({ path: "/" });
+      next({ path: "/home" });
     } else {
       if (store.getters.menu.length === 0) {
         store
@@ -74,7 +74,6 @@ router.beforeEach((to, from, next) => {
                   children: delMenu(res.menu)
                 }
               ];
-              console.log(menu);
               router.addRoutes(menu);
               next({ ...to, replace: true });
             }

@@ -71,7 +71,7 @@ export default {
           getToken(values).then(res => {
             if (res) {
               localStorage.setItem("token", res.token);
-              this.$router.push({ path: "/" });
+              this.$router.push({ path: "/home" });
             }
           });
         }
