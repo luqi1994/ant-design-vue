@@ -21,10 +21,11 @@ const routes = [
 
 // 路由的依赖组件
 const components = {
+  BlankLayout: BlankLayout,
   Home: () => import("@/views/home/Home"),
-  List: BlankLayout,
+  Empty: () => import("@/views/notfound/Empty"),
   ListTable: () => import("@/views/user/Login"),
-  Empty: () => import("@/views/notfound/Empty")
+  TestTabs: () => import("@/views/test/Tabs")
 };
 
 const router = new VueRouter({

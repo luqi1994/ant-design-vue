@@ -43,7 +43,7 @@ const getUserInfo = {
         path: "/list",
         redirect: "/list/table",
         name: "List",
-        component: "List",
+        component: "BlankLayout",
         hidden: 0,
         children: [
           {
@@ -65,6 +65,26 @@ const getUserInfo = {
         name: "Empty",
         component: "Empty",
         hidden: 1
+      },
+      {
+        title: "测试",
+        icon: "setting",
+        path: "/test",
+        redirect: "/test/tabs",
+        name: "Test",
+        component: "BlankLayout",
+        hidden: 0,
+        children: [
+          {
+            title: "Tabs",
+            icon: "",
+            path: "/test/tabs",
+            redirect: "",
+            name: "TestTabs",
+            component: "TestTabs",
+            hidden: 0
+          }
+        ]
       }
     ]
   }
@@ -94,7 +114,7 @@ Mock.mock("/api/user/getUserInfo", "post", function(res) {
   if (res.body) {
     if (JSON.parse(res.body).token !== "token") {
       return {
-        code: 500,
+        code: 403,
         msg: "token失效或者错误"
       };
     } else {

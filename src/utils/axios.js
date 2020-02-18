@@ -1,5 +1,6 @@
 import axios from "axios";
 import { message } from "ant-design-vue";
+import store from "@/store";
 
 const service = axios.create({
   timeout: 6000 // 请求超时时间
@@ -31,6 +32,13 @@ service.interceptors.response.use(res => {
       return res.data.data;
     } else if (res.data.code === 500) {
       message.error(res.data.msg);
+    } else if (res.data.code === 403) {
+      message.error(res.data.msg);
+      store.dispatch("logout").then(() => {
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      });
     } else {
       message.error("获取数据失败，请重试");
       // Promise.reject(res.data.msg);

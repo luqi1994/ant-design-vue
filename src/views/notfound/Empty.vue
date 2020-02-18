@@ -4,7 +4,7 @@
     image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
   >
     <span slot="description"> 模块尚未开发 </span>
-    <a-button
+    <!-- <a-button
       size="small"
       type="primary"
       @click="
@@ -14,7 +14,7 @@
       "
     >
       home
-    </a-button>
+    </a-button> -->
   </a-empty>
 </template>
 

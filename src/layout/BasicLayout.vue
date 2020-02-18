@@ -119,6 +119,7 @@ export default {
   },
   mounted() {
     this.getMenu();
+    console.log(111,this.openKeys);
   },
   methods: {
     ...mapActions(["logout"]),
